@@ -209,7 +209,7 @@ function render(){
   table($('t-held'), [['แบรนด์'],...sizes.map(s=>[s+' กก.',1]),['รวม',1]],
     brs.map(b=>[BRTH[b],...sizes.map(s=>f(held[b+'|'+s]||0)),'<b>'+f(sumB(b))+'</b>'])
       .concat(brs.length>1?[['<b>รวม</b>',...sizes.map(s=>'<b>'+f(brs.reduce((a,b)=>a+(held[b+'|'+s]||0),0))+'</b>'),'<b>'+f(totHeld)+'</b>']]:[]));
-  const extra=cs.map(c=>({c,x:bal[c.customer_id]-ent[c.customer_id]})).filter(e=>e.x>0).map(e=>({...e,v:e.x*PROD[e.c.size_kg].cylinder_value})).sort((a,b)=>b.v-a.v);
+  const extra=cs.map(c=>({c,x:Math.min(bal[c.customer_id],bal[c.customer_id]-ent[c.customer_id])})).filter(e=>e.x>0).map(e=>({...e,v:e.x*PROD[e.c.size_kg].cylinder_value})).sort((a,b)=>b.v-a.v);
   const xN=extra.reduce((a,e)=>a+e.x,0), xV=extra.reduce((a,e)=>a+e.v,0);
   table($('t-extra'), [['ลูกค้า'],['แบรนด์'],['ถังที่ยังไม่คืน',1],['มูลค่า (บาท)',1]],
     extra.slice(0,8).map(e=>[esc(e.c.name),BRTH[e.c.brand],e.x,f(e.v)]));

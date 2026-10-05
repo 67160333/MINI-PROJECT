@@ -99,7 +99,8 @@ def main():
     rows = []
     for c in cust:
         cid, size = c["customer_id"], int(c["size_kg"])
-        held, extra = bal[cid], max(0, bal[cid] - ent[cid])
+        held = bal[cid]
+        extra = max(0, min(held, held - ent[cid]))  # ถือถังเกินมัดจำ (ไม่เกินจำนวนที่ถืออยู่)
         idle = (ASOF - dt.date.fromisoformat(last[cid])).days if cid in last else None
         dormant = 1 if held > 0 and (idle is None or idle > DORMANT_DAYS) else 0
         rows.append(dict(
