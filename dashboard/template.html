@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ถังรวม — เรื่องเล่าจากข้อมูลร้านแก๊สหลายแบรนด์</title>
+<style>
+:root{
+  --bg:#f7f6f2; --card:#fff; --ink:#1f2328; --muted:#62676e; --line:#e3e1da;
+  --accent:#b4441e; --good:#2e7d4f; --warn:#c27c0e; --bad:#b3261e;
+  --WP:#2f6fbf; --PTT:#1a9e86; --UNQ:#d9821a; --SGP:#a8457c; --OTHER:#9aa0a6;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Sarabun","Noto Sans Thai","Leelawadee UI","Tahoma",system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header.hero{padding:56px 0 28px;border-bottom:1px solid var(--line)}
+.kicker{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:clamp(28px,4.4vw,44px);line-height:1.2;margin:8px 0 12px}
+.lede{font-size:18px;color:var(--muted);max-width:760px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:18px;font-size:14px;color:var(--muted)}
+.meta b{color:var(--ink)}
+.notice{margin-top:18px;background:#fff6e5;border:1px solid #f0d9a8;border-radius:10px;padding:10px 14px;font-size:14px}
+nav.toc{position:sticky;top:0;z-index:5;background:rgba(247,246,242,.95);backdrop-filter:blur(4px);
+  border-bottom:1px solid var(--line)}
+nav.toc .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px;align-items:center}
+nav.toc a{white-space:nowrap;font-size:13px;color:var(--muted);text-decoration:none;padding:4px 10px;border-radius:99px}
+nav.toc a:hover{background:#ece9e1;color:var(--ink)}
+.filter{display:flex;gap:6px;align-items:center;margin-left:auto;padding-left:12px}
+.filter span{font-size:12px;color:var(--muted);white-space:nowrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:3px 10px;font-size:12px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;font-family:inherit;color:var(--ink)}
+.chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip.off{opacity:.35}
+section.chapter{padding:48px 0 16px}
+.chnum{font-size:13px;color:var(--accent);font-weight:700}
+h2{font-size:clamp(22px,3vw,30px);line-height:1.3;margin:4px 0 8px}
+.story{color:var(--muted);max-width:780px;font-size:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:18px}
+.card h3{font-size:15px;margin:0 0 10px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi .v{font-size:28px;font-weight:700;line-height:1.1}
+.kpi .l{font-size:13px;color:var(--muted)}
+.sowhat{border-left:4px solid var(--accent);background:#fff;padding:12px 16px;margin-top:16px;border-radius:0 10px 10px 0;font-size:15px}
+.sowhat b{color:var(--accent)}
+svg text{font-family:inherit}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--muted);margin-top:6px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{font-size:12px;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:99px;color:#fff}
+.actions li{margin:8px 0}
+.feature{display:grid;grid-template-columns:200px 1fr;gap:6px 16px;font-size:15px}
+.feature div:nth-child(odd){font-weight:700}
+@media(max-width:600px){.feature{grid-template-columns:1fr}}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:28px 0 60px;font-size:14px;color:var(--muted)}
+footer h4{color:var(--ink);margin:18px 0 6px}
+footer a{color:var(--accent)}
+.empty{color:var(--muted);font-size:14px;padding:12px 0}
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="wrap">
+  <div class="kicker">Business Idea Creation · Data Storytelling Dashboard</div>
+  <h1>ร้านแก๊สร้านหนึ่ง มองเห็นธุรกิจตัวเองได้แค่ไหน?</h1>
+  <p class="lede">เรื่องเล่า 6 บทจากข้อมูลการขาย 6 เดือนของร้านแก๊สที่ขาย 4 แบรนด์
+  — ทำไมร้านแบบนี้ถึงต้องการ <b>ถังรวม</b> ระบบหลังร้านที่รวมทุกแบรนด์ไว้ในหน้าเดียว</p>
+  <div class="meta">
+    <div>บริษัท: <b>ถังรวม (ชื่อชั่วคราว)</b></div>
+    <div>ช่วงข้อมูล: <b id="m-range"></b></div>
+    <div>ข้อมูล ณ วันที่: <b id="m-asof"></b></div>
+    <div>รายการขาย: <b id="m-n"></b></div>
+  </div>
+  <div class="notice">⚠️ <b>ข้อมูลร้านเป็นข้อมูลจำลอง (synthetic)</b> สร้างจากสมมติฐานพฤติกรรมธุรกิจ เพราะไม่มีชุดข้อมูลระดับร้านแก๊สบน Kaggle หรือแหล่งเปิด
+  — ยกเว้นบทที่ 1 (ส่วนแบ่งตลาด) ซึ่งเป็นข้อมูลจริงพร้อมแหล่งอ้างอิง · รายละเอียดอยู่ท้ายหน้า</div>
+</div></header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#ch1">1 ตลาด</a><a href="#ch2">2 สี่แบรนด์</a><a href="#ch3">3 งานรายวัน</a>
+  <a href="#ch4">4 ถังนอกร้าน</a><a href="#ch5">5 ถังหลับ</a><a href="#ch6">6 เงินค้าง</a><a href="#ch7">7 ทางออก</a>
+  <div class="filter" id="filter"><span>กรองแบรนด์ (บท 3–6):</span></div>
+</div></nav>
+
+<main class="wrap">
+
+<section class="chapter" id="ch1">
+  <div class="chnum">บทที่ 1 · ตลาด (ข้อมูลจริง)</div>
+  <h2 id="h1"></h2>
+  <p class="story">แอปจัดการร้านแก๊สที่ดีที่สุดในไทยตอนนี้เป็นของ ปตท. แจกฟรี แต่เขียนไว้ชัดว่าใช้ได้
+  <b>"สำหรับร้านค้าตัวแทน ก๊าซหุงต้ม ปตท. เท่านั้น"</b> ร้านที่เหลือทั้งหมดยังจดในสมุด</p>
+  <div class="card"><h3>ส่วนแบ่งตลาด LPG ประเทศไทย ไตรมาส 2/2568 (%)</h3><div id="c-market"></div></div>
+  <div class="sowhat" id="sw1"></div>
+</section>
+
+<section class="chapter" id="ch2">
+  <div class="chnum">บทที่ 2 · ร้านเราขาย 4 แบรนด์</div>
+  <h2 id="h2"></h2>
+  <p class="story">ลูกค้าต้องแลกถังยี่ห้อเดิม ร้านจึงต้องรับทุกยี่ห้อที่คนในพื้นที่ใช้
+  ถ้าร้านนี้ใช้แอปของแบรนด์ใดแบรนด์หนึ่ง จะเห็นรายได้ของตัวเองเพียงบางส่วน</p>
+  <div class="grid g2">
+    <div class="card"><h3>สัดส่วนรายได้ค่าแก๊สตามแบรนด์</h3><div id="c-brandshare"></div></div>
+    <div class="card"><h3>รายได้ค่าแก๊สรายเดือน แยกแบรนด์ (บาท)</h3><div id="c-monthly"></div><div class="legend" id="lg-monthly"></div></div>
+  </div>
+  <div class="sowhat" id="sw2"></div>
+</section>
+
+<section class="chapter" id="ch3">
+  <div class="chnum">บทที่ 3 · งานประจำวันที่ต้องจำไว้ในหัว</div>
+  <h2 id="h3"></h2>
+  <p class="story">ทุกออเดอร์ต้องจำว่าลูกค้าใช้ยี่ห้อไหน ขนาดไหน บ้านอยู่ตรงไหน ใครไปส่ง และจ่ายแล้วหรือยัง
+  ข้อมูลทั้งหมดนี้วันนี้อยู่ในสมองของคนเฝ้าร้านคนเดียว</p>
+  <div class="grid g4" id="k3"></div>
+  <div class="grid g2">
+    <div class="card"><h3>จำนวนออเดอร์ต่อวัน (เส้นทึบ = ค่าเฉลี่ย 7 วัน)</h3><div id="c-daily"></div></div>
+    <div class="card"><h3>ออเดอร์เข้าช่วงไหนของวัน</h3><div id="c-hour"></div></div>
+  </div>
+  <div class="sowhat" id="sw3"></div>
+</section>
+
+<section class="chapter" id="ch4">
+  <div class="chnum">บทที่ 4 · ถังที่อยู่นอกร้าน</div>
+  <h2 id="h4"></h2>
+  <p class="story">ทุกครั้งที่ส่งถังเต็มแต่ได้ถังเปล่าคืนไม่ครบ ยอดถังที่อยู่กับลูกค้าจะเพิ่มขึ้นทีละใบ
+  บนกระดาษไม่มีใครรวมยอดนี้ — และร้านต้องเคลียร์ถังกับโรงบรรจุของ <b>แต่ละแบรนด์แยกกัน</b></p>
+  <div class="grid g2">
+    <div class="card"><h3>ถังที่อยู่กับลูกค้า แยกแบรนด์ × ขนาด</h3><div id="t-held"></div></div>
+    <div class="card"><h3>ถังเต็มที่ส่งออก ลบ ถังเปล่าที่ได้คืน (รายเดือน)</h3><div id="c-gap"></div></div>
+  </div>
+  <div class="card"><h3>ลูกค้าที่ถือถังเกินจำนวนที่วางมัดจำไว้ (ยังไม่ได้คืนถังเปล่า)</h3><div id="t-extra"></div></div>
+  <div class="sowhat" id="sw4"></div>
+</section>
+
+<section class="chapter" id="ch5">
+  <div class="chnum">บทที่ 5 · ถังหลับ</div>
+  <h2 id="h5"></h2>
+  <p class="story">ลูกค้าบางรายเลิกสั่งไปเงียบ ๆ — ย้ายบ้าน เปลี่ยนร้าน หรือเลิกกิจการ — แต่ถังของร้านยังอยู่กับเขา
+  ร้านไม่รู้ เพราะ <b>"ลูกค้าที่ไม่ได้โทรมา" ไม่เคยถูกจดในสมุด</b></p>
+  <div class="grid g3" id="k5"></div>
+  <div class="card"><h3>รายชื่อลูกค้าที่ถือถังอยู่แต่ไม่สั่งเกิน 60 วัน</h3><div id="t-dormant"></div></div>
+  <div class="sowhat" id="sw5"></div>
+</section>
+
+<section class="chapter" id="ch6">
+  <div class="chnum">บทที่ 6 · เงินที่ยังไม่เข้า</div>
+  <h2 id="h6"></h2>
+  <p class="story">ร้านอาหารส่วนใหญ่ซื้อเชื่อแล้วจ่ายรอบเดือน ยิ่งค้างนาน ยิ่งตามยาก
+  การรู้ว่าใครค้างมาเกิน 60 วันตั้งแต่วันนี้ คือความต่างระหว่างทวงได้กับหนี้สูญ</p>
+  <div class="grid g2">
+    <div class="card"><h3>ยอดค้างชำระตามอายุหนี้ (บาท)</h3><div id="c-aging"></div></div>
+    <div class="card"><h3>ลูกหนี้ 8 อันดับแรก</h3><div id="t-debt"></div></div>
+  </div>
+  <div class="sowhat" id="sw6"></div>
+</section>
+
+<section class="chapter" id="ch7">
+  <div class="chnum">บทที่ 7 · ทางออก: ถังรวม</div>
+  <h2>ถ้าร้านนี้มีระบบที่รวมทุกแบรนด์ไว้ในหน้าเดียว เช้าพรุ่งนี้เขาจะมีรายการงานแบบนี้</h2>
+  <div class="card"><ol class="actions" id="actions"></ol></div>
+  <div class="card"><h3>แต่ละบทของเรื่อง = ฟีเจอร์หนึ่งของระบบ</h3>
+    <div class="feature">
+      <div>บันทึก 2–3 แตะ</div><div>เลือกลูกค้า → ระบบจำยี่ห้อ/ขนาด/ที่อยู่ให้ → กดยืนยัน (บทที่ 3)</div>
+      <div>ยอดถังต่อลูกค้า</div><div>ส่งถังเต็ม +1 / รับถังเปล่า −1 ไม่ต้องสแกน ไม่ต้องติด QR (บทที่ 4)</div>
+      <div>แจ้งเตือนถังหลับ</div><div>ลูกค้าที่ถือถังแต่เงียบเกินรอบปกติ (บทที่ 5)</div>
+      <div>ลูกหนี้ตามอายุ</div><div>แยก 0–30 / 31–60 / 61–90 / 90+ วัน (บทที่ 6)</div>
+      <div>มุมมองข้ามแบรนด์</div><div>สิ่งที่แอปของเจ้าของแบรนด์ทำให้ไม่ได้ (บทที่ 1–2)</div>
+    </div>
+  </div>
+  <div class="card"><h3>สิ่งที่ยังต้องพิสูจน์ (พูดตรง ๆ)</h3>
+    <ul>
+      <li><b>ร้านยอมจ่ายเดือนละเท่าไหร่</b> — ยังไม่ได้สอบถามร้านจริง เป็นสมมติฐานหลักของแผนธุรกิจ</li>
+      <li>ตัวเลขในบทที่ 2–6 มาจากข้อมูลจำลอง ขนาดของปัญหาในร้านจริงอาจมากหรือน้อยกว่านี้</li>
+      <li>คู่แข่งที่เป็นกลางมีอยู่ (เช่น LPG Ledger จากต่างประเทศ) และสตาร์ตอัปไทย FinGas เคยทำตลาดนี้แล้วเลิกกิจการในปี 2565</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  <h4>รายชื่อสมาชิกกลุ่ม</h4>
+  <table id="team"><thead><tr><th>ลำดับ</th><th>ชื่อ-นามสกุล</th><th>รหัสนักศึกษา</th><th>หน้าที่</th></tr></thead><tbody></tbody></table>
+  <h4>ข้อมูลที่ใช้</h4>
+  <ul>
+    <li><b>บทที่ 1 (ข้อมูลจริง):</b> ส่วนแบ่งตลาด LPG ไตรมาส 2/2568 ของกรมธุรกิจพลังงาน อ้างใน
+      <a href="https://www.lhbank.co.th/getattachment/031004c9-34dc-4c54-b374-4928bb44246c/economic-analysis-Industry-Outlook-2025-Natural-Gas_Oct_2025">รายงาน LH Bank (ต.ค. 2568)</a>
+      · "อื่น ๆ" คำนวณจาก 100 − ผลรวม 5 รายแรก</li>
+    <li><b>การแลกถังยี่ห้อเดิม:</b> คำให้สัมภาษณ์ผู้ก่อตั้ง FinGas ใน <a href="https://themomentum.co/fingas-dtac-accelerate/">The Momentum (ธ.ค. 2562)</a> — ยังไม่ได้ตรวจตัวบทกฎหมาย</li>
+    <li><b>ข้อความแอป ปตท.:</b> <a href="https://apps.apple.com/th/app/lpg-shop/id1629566483">LPG Shop บน App Store</a></li>
+    <li><b>บทที่ 2–6 (ข้อมูลจำลอง):</b> สร้างด้วย <code>scripts/generate_data.py</code> (seed คงที่ รันซ้ำได้ผลเดิม) — ไฟล์ใน <code>data/raw/</code></li>
+    <li>ราคาแก๊สและมูลค่าถังเป็นค่าประมาณเพื่อการจำลอง ไม่ใช่ราคาประกาศทางการ</li>
+  </ul>
+</div></footer>
+
+<script>
+const D = /*__DATA__*/null;
+const BR = D.brands.map(b=>b.brand);
+const BRTH = Object.fromEntries(D.brands.map(b=>[b.brand,b.brand_th]));
+const COLOR = b => getComputedStyle(document.documentElement).getPropertyValue('--'+b).trim() || '#999';
+const PROD = Object.fromEntries(D.products.map(p=>[p.size_kg,p]));
+const ASOF = new Date(D.asof+'T00:00:00');
+const fmt = n => Math.round(n).toLocaleString('th-TH');
+const pct = (a,b) => b ? (a/b*100) : 0;
+const DAY = 86400000;
+const days = d => Math.round((ASOF - new Date(d+'T00:00:00'))/DAY);
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MONTH_TH = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const thDate = s => { const d=new Date(s+'T00:00:00'); return `${d.getDate()} ${MONTH_TH[d.getMonth()]} ${d.getFullYear()+543}`; };
+
+// unpack transactions
+const TX = D.tx.map(r=>Object.fromEntries(D.txCols.map((k,i)=>[k,r[i]])));
+const CUST = Object.fromEntries(D.customers.map(c=>[c.customer_id,c]));
+
+/* ---------- tiny SVG chart helpers ---------- */
+function svg(w,h,inner){return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img">${inner}</svg>`}
+function hbar(el, rows, {unit='', max=null, label=180}={}){
+  const W=520, rh=30, H=rows.length*rh+6, m=max??Math.max(...rows.map(r=>r.value),1), bw=W-label-70;
+  let s='';
+  rows.forEach((r,i)=>{const y=i*rh+4, w=Math.max(1,r.value/m*bw);
+    s+=`<text x="${label-8}" y="${y+17}" text-anchor="end" font-size="13" fill="#1f2328">${esc(r.label)}</text>
+        <rect x="${label}" y="${y+4}" width="${w}" height="${rh-12}" rx="3" fill="${r.color}"/>
+        <text x="${label+w+6}" y="${y+17}" font-size="13" fill="#62676e">${r.text??(r.value.toLocaleString('th-TH')+unit)}</text>`;});
+  el.innerHTML=svg(W,H,s);
+}
+function vstack(el, cats, series, {h=220}={}){
+  const W=520,H=h,L=56,B=26,T=8, tot=cats.map((_,i)=>series.reduce((a,s)=>a+s.values[i],0));
+  const m=Math.max(...tot,1)*1.08, bw=(W-L-10)/cats.length;
+  let s='';
+  for(let k=0;k<=4;k++){const v=m/4*k,y=H-B-(H-B-T)*k/4;
+    s+=`<line x1="${L}" x2="${W}" y1="${y}" y2="${y}" stroke="#eee"/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="11" fill="#62676e">${v>=1000?fmt(v/1000)+'k':fmt(v)}</text>`;}
+  cats.forEach((c,i)=>{let acc=0;const x=L+i*bw+bw*.18;
+    series.forEach(sr=>{const v=sr.values[i],hh=(H-B-T)*v/m,y=H-B-(H-B-T)*acc/m-hh;acc+=v;
+      if(v>0)s+=`<rect x="${x}" y="${y}" width="${bw*.64}" height="${hh}" fill="${sr.color}"><title>${esc(sr.name)}: ${fmt(v)}</title></rect>`;});
+    s+=`<text x="${x+bw*.32}" y="${H-8}" text-anchor="middle" font-size="12" fill="#62676e">${esc(c)}</text>`;});
+  el.innerHTML=svg(W,H,s);
+}
+function vbars(el, cats, vals, {h=200,color='#b4441e',labels=true,fmtv=fmt}={}){
+  const W=520,H=h,L=36,B=26,T=14,m=Math.max(...vals.map(Math.abs),1)*1.12,bw=(W-L-10)/cats.length;
+  let s=`<line x1="${L}" x2="${W}" y1="${H-B}" y2="${H-B}" stroke="#ccc"/>`;
+  cats.forEach((c,i)=>{const v=vals[i],hh=(H-B-T)*Math.max(v,0)/m,x=L+i*bw+bw*.15;
+    s+=`<rect x="${x}" y="${H-B-hh}" width="${bw*.7}" height="${hh}" rx="2" fill="${typeof color==='function'?color(i,v):color}"><title>${esc(c)}: ${fmtv(v)}</title></rect>`;
+    if(labels)s+=`<text x="${x+bw*.35}" y="${H-B-hh-4}" text-anchor="middle" font-size="12" fill="#1f2328">${fmtv(v)}</text>`;
+    s+=`<text x="${x+bw*.35}" y="${H-8}" text-anchor="middle" font-size="${cats.length>14?10:12}" fill="#62676e">${esc(c)}</text>`;});
+  el.innerHTML=svg(W,H,s);
+}
+function line(el, xs, ys, ma, {h=200}={}){
+  const W=520,H=h,L=36,B=24,T=10,m=Math.max(...ys,1)*1.1,n=xs.length;
+  const X=i=>L+(W-L-6)*i/(n-1), Y=v=>H-B-(H-B-T)*v/m;
+  let s='';
+  for(let k=0;k<=4;k++){const v=m/4*k;s+=`<line x1="${L}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="#eee"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="#62676e">${Math.round(v)}</text>`;}
+  s+=`<polyline fill="none" stroke="#d9cfc2" stroke-width="1.2" points="${ys.map((v,i)=>X(i)+','+Y(v)).join(' ')}"/>`;
+  s+=`<polyline fill="none" stroke="#b4441e" stroke-width="2.4" points="${ma.map((v,i)=>v==null?'':X(i)+','+Y(v)).filter(Boolean).join(' ')}"/>`;
+  let last=-1;xs.forEach((x,i)=>{const mo=x.slice(5,7);if(mo!==last){last=mo;s+=`<text x="${X(i)}" y="${H-6}" font-size="11" fill="#62676e">${MONTH_TH[+mo-1]}</text>`;}});
+  el.innerHTML=svg(W,H,s);
+}
+function table(el, head, rows){
+  if(!rows.length){el.innerHTML='<div class="empty">ไม่มีรายการในแบรนด์ที่เลือก</div>';return;}
+  el.innerHTML=`<table><thead><tr>${head.map(h=>`<th class="${h.n?'n':''}">${h.t}</th>`).join('')}</tr></thead><tbody>${
+    rows.map(r=>`<tr>${r.map((c,i)=>`<td class="${head[i].n?'n':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+const tag = b => `<span class="tag" style="background:${COLOR(b)}">${esc(BRTH[b])}</span>`;
+function kpis(el, items){el.innerHTML=items.map(k=>`<div class="kpi"><div class="v" style="color:${k.c||'inherit'}">${k.v}</div><div class="l">${k.l}</div></div>`).join('');}
+
+/* ---------- header meta ---------- */
+$('m-range').textContent = `${thDate(D.start)} – ${thDate(D.asof)}`;
+$('m-asof').textContent = thDate(D.asof);
+$('m-n').textContent = `${fmt(TX.length)} รายการ · ลูกค้า ${fmt(D.customers.length)} ราย`;
+
+/* ---------- Chapter 1 & 2 (no filter) ---------- */
+(function(){
+  const mk = D.market;
+  const ptt = mk.find(m=>m.company==='PTTOR').market_share_pct;
+  const rest = Math.round((100-ptt)*10)/10;
+  $('h1').textContent = `${rest}% ของตลาดแก๊สหุงต้ม ไม่มีแอปจัดการร้านจากเจ้าของแบรนด์`;
+  const cmap={PTTOR:'PTT',WP:'WP',UNIQUE:'UNQ',SGP:'SGP'};
+  hbar($('c-market'), mk.map(m=>({label:m.company_th, value:m.market_share_pct, text:m.market_share_pct+'%',
+      color: m.company==='PTTOR' ? COLOR('PTT') : '#c9c4b8'})), {max:45, label:130});
+  $('sw1').innerHTML = `<b>ความหมาย:</b> ร้านตัวแทน ปตท. มีเครื่องมือฟรีแล้ว แต่ร้านของแบรนด์ที่เหลือ (${rest}% ของตลาด) ไม่มี —
+    และร้านที่ขายหลายแบรนด์ แม้เป็นตัวแทน ปตท. ก็เห็นได้แค่ยอดของ ปตท.`;
+
+  const rev = Object.fromEntries(BR.map(b=>[b,0]));
+  TX.forEach(t=>rev[t.brand]+=t.gas_amount);
+  const total = Object.values(rev).reduce((a,b)=>a+b,0);
+  const sorted = BR.slice().sort((a,b)=>rev[b]-rev[a]);
+  const top = sorted[0], topP = pct(rev[top],total), pttP = pct(rev.PTT,total);
+  $('h2').textContent = `แอปของแบรนด์ใดแบรนด์หนึ่ง เห็นรายได้ร้านนี้ได้มากสุดแค่ ${topP.toFixed(0)}%`;
+  hbar($('c-brandshare'), sorted.map(b=>({label:BRTH[b], value:rev[b], color:COLOR(b),
+      text:`${pct(rev[b],total).toFixed(1)}% · ${fmt(rev[b])} ฿`})), {label:100});
+  const months = [...new Set(TX.map(t=>t.date.slice(0,7)))].sort();
+  vstack($('c-monthly'), months.map(m=>MONTH_TH[+m.slice(5)-1]),
+    BR.map(b=>({name:BRTH[b], color:COLOR(b), values:months.map(m=>TX.filter(t=>t.brand===b&&t.date.startsWith(m)).reduce((a,t)=>a+t.gas_amount,0))})));
+  $('lg-monthly').innerHTML = BR.map(b=>`<span><i style="background:${COLOR(b)}"></i>${BRTH[b]}</span>`).join('');
+  $('sw2').innerHTML = `<b>ความหมาย:</b> รายได้ค่าแก๊ส 6 เดือน ${fmt(total)} บาท ถ้าร้านนี้ใช้แอปของ ปตท. จะเห็นแค่ ${pttP.toFixed(0)}%
+    ส่วนอีก ${(100-pttP).toFixed(0)}% ยังต้องจดในสมุดเหมือนเดิม — ร้านจะไม่มีวันเห็นธุรกิจตัวเองทั้งหมดในที่เดียว`;
+})();
+
+/* ---------- filter ---------- */
+const ON = new Set(BR);
+$('filter').insertAdjacentHTML('beforeend', BR.map(b=>`<button class="chip" data-b="${b}"><i style="background:${COLOR(b)}"></i>${BRTH[b]}</button>`).join(''));
+$('filter').addEventListener('click', e=>{
+  const c=e.target.closest('.chip'); if(!c) return;
+  const b=c.dataset.b;
+  if(ON.has(b)){ if(ON.size>1){ON.delete(b);c.classList.add('off');} } else {ON.add(b);c.classList.remove('off');}
+  render();
+});
+
+/* ---------- Chapters 3–6 (filtered) ---------- */
+function render(){
+  const tx = TX.filter(t=>ON.has(t.brand));
+  const custs = D.customers.filter(c=>ON.has(c.brand));
+  const label = ON.size===BR.length ? 'ทุกแบรนด์' : [...ON].map(b=>BRTH[b]).join(', ');
+
+  // --- ch3 daily work
+  const orders = tx.filter(t=>t.full_out>0);
+  const nDays = Math.round((ASOF - new Date(D.start+'T00:00:00'))/DAY)+1;
+  const dl = Array.from({length:nDays},(_,i)=>{const d=new Date(new Date(D.start+'T00:00:00').getTime()+i*DAY);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;});
+  const perDay = Object.fromEntries(dl.map(d=>[d,0])); orders.forEach(o=>perDay[o.date]=(perDay[o.date]||0)+1);
+  const ys = dl.map(d=>perDay[d]);
+  const ma = ys.map((_,i)=>i<6?null:ys.slice(i-6,i+1).reduce((a,b)=>a+b,0)/7);
+  line($('c-daily'), dl, ys, ma);
+  const hours = Array.from({length:12},(_,i)=>i+7);
+  const byH = hours.map(h=>orders.filter(o=>+o.time.slice(0,2)===h).length);
+  const peakH = hours[byH.indexOf(Math.max(...byH))];
+  vbars($('c-hour'), hours.map(h=>h+'น.'), byH, {color:(i)=>hours[i]===peakH?'#b4441e':'#d9b9a8'});
+  const maxDay = Math.max(...ys), avg = orders.length/dl.length;
+  const deliv = pct(orders.filter(o=>o.delivery==='delivery').length, orders.length);
+  const skus = new Set(custs.map(c=>c.brand+'-'+c.size_kg)).size;
+  kpis($('k3'), [
+    {v:avg.toFixed(1), l:'ออเดอร์เฉลี่ยต่อวัน'},
+    {v:maxDay, l:'วันที่ยุ่งที่สุด (ออเดอร์)'},
+    {v:deliv.toFixed(0)+'%', l:'ออเดอร์ที่ต้องไปส่ง'},
+    {v:skus, l:'แบบถัง (ยี่ห้อ × ขนาด) ที่ต้องจำ'},
+  ]);
+  $('h3').textContent = `เฉลี่ยวันละ ${avg.toFixed(0)} ออเดอร์ วันที่ยุ่งสุด ${maxDay} ออเดอร์ — และต้องจำถัง ${skus} แบบ`;
+  $('sw3').innerHTML = `<b>ความหมาย (${esc(label)}):</b> ออเดอร์พีคตอน ${peakH}:00 น. ซึ่งเป็นเวลาที่คนเฝ้าร้านต้องรับสาย จดออเดอร์ และสั่งคนส่งพร้อมกัน
+    — ถ้าคนนี้ไม่อยู่ ร้านแทบทำงานต่อไม่ได้ ระบบจึงต้อง <b>บันทึกเสร็จใน 2–3 แตะ</b> ไม่อย่างนั้นจะไม่มีใครใช้`;
+
+  // --- ch4 cylinders outside
+  const bal = {}; custs.forEach(c=>bal[c.customer_id]=c.cylinders_at_start);
+  tx.forEach(t=>bal[t.customer_id]+=t.full_out-t.empty_in);
+  const sizes=[...new Set(D.products.map(p=>p.size_kg))].sort((a,b)=>a-b);
+  const held={}; let totCyl=0, totVal=0;
+  custs.forEach(c=>{const k=c.brand+'|'+c.size_kg; held[k]=(held[k]||0)+bal[c.customer_id]; totCyl+=bal[c.customer_id]; totVal+=bal[c.customer_id]*PROD[c.size_kg].cylinder_value;});
+  const brOn = BR.filter(b=>ON.has(b));
+  table($('t-held'), [{t:'แบรนด์'},...sizes.map(s=>({t:s+' กก.',n:1})),{t:'รวม (ใบ)',n:1},{t:'มูลค่าถัง (฿)',n:1}],
+    brOn.map(b=>{const r=sizes.map(s=>held[b+'|'+s]||0);const v=sizes.reduce((a,s)=>a+(held[b+'|'+s]||0)*PROD[s].cylinder_value,0);
+      return [tag(b),...r.map(fmt),`<b>${fmt(r.reduce((a,x)=>a+x,0))}</b>`,fmt(v)];})
+    .concat([['<b>รวม</b>',...sizes.map(s=>`<b>${fmt(brOn.reduce((a,b)=>a+(held[b+'|'+s]||0),0))}</b>`),`<b>${fmt(totCyl)}</b>`,`<b>${fmt(totVal)}</b>`]]));
+  const months=[...new Set(TX.map(t=>t.date.slice(0,7)))].sort();
+  const gap=months.map(m=>tx.filter(t=>t.date.startsWith(m)&&t.txn_type==='exchange').reduce((a,t)=>a+t.full_out-t.empty_in,0));
+  vbars($('c-gap'), months.map(m=>MONTH_TH[+m.slice(5)-1]), gap, {color:'#c27c0e', fmtv:v=>(v>0?'+':'')+v});
+  // ถังที่ลูกค้ามีสิทธิ์ถือ = ถังตอนเริ่ม + ถังที่ซื้อเพิ่ม (วางมัดจำ) − ถังที่คืน
+  const ent={}; custs.forEach(c=>ent[c.customer_id]=c.cylinders_at_start);
+  tx.forEach(t=>{if(t.txn_type==='new_cylinder')ent[t.customer_id]+=t.full_out; if(t.txn_type==='return_cylinder')ent[t.customer_id]-=t.empty_in;});
+  const extra = custs.map(c=>({c, x:bal[c.customer_id]-ent[c.customer_id]})).filter(e=>e.x>0)
+    .map(e=>({...e, v:e.x*PROD[e.c.size_kg].cylinder_value})).sort((a,b)=>b.v-a.v);
+  const xN=extra.reduce((a,e)=>a+e.x,0), xV=extra.reduce((a,e)=>a+e.v,0);
+  table($('t-extra'), [{t:'ลูกค้า'},{t:'แบรนด์'},{t:'ขนาด',n:1},{t:'ถังเกินมัดจำ (ใบ)',n:1},{t:'มูลค่าที่ไม่มีมัดจำคุ้ม (฿)',n:1}],
+    extra.slice(0,10).map(e=>[esc(e.c.name), tag(e.c.brand), e.c.size_kg+' กก.', e.x, fmt(e.v)]));
+  $('h4').textContent = `ถังหมุนเวียน ${fmt(totCyl)} ใบอยู่ที่บ้านลูกค้า — ${fmt(xN)} ใบในนั้นไม่มีมัดจำคุ้มครอง`;
+  $('sw4').innerHTML = `<b>ความหมาย (${esc(label)}):</b> ถังส่วนใหญ่ลูกค้าวางมัดจำไว้แล้ว ไม่ใช่ปัญหา
+    แต่มีลูกค้า <b>${extra.length} ราย</b> ที่รับถังเต็มไปแล้วยังไม่คืนถังเปล่า รวม <b>${fmt(xN)} ใบ มูลค่า ${fmt(xV)} บาท</b> — ถ้าถังหาย ร้านเป็นฝ่ายรับภาระ (สมมติฐานที่ต้องยืนยันกับร้านจริง)
+    บนกระดาษไม่มีใครรวมตัวเลขนี้ ระบบใช้แค่บวกลบ: ส่งถังเต็ม +1 รับถังเปล่า −1 ไม่ต้องติด QR ไม่ต้องสแกน เพราะถังหุงต้มสลับกันได้`;
+
+  // --- ch5 dormant
+  const last={}; tx.forEach(t=>{if(!last[t.customer_id]||t.date>last[t.customer_id])last[t.customer_id]=t.date;});
+  const dorm = custs.filter(c=>bal[c.customer_id]>0 && (!last[c.customer_id] || days(last[c.customer_id])>60))
+    .map(c=>({c, n:bal[c.customer_id], v:bal[c.customer_id]*PROD[c.size_kg].cylinder_value, last:last[c.customer_id], idle:last[c.customer_id]?days(last[c.customer_id]):null}))
+    .sort((a,b)=>b.v-a.v || (b.idle??999)-(a.idle??999));
+  const dN=dorm.reduce((a,d)=>a+d.n,0), dV=dorm.reduce((a,d)=>a+d.v,0);
+  kpis($('k5'), [
+    {v:dorm.length, l:'ลูกค้าที่เงียบไปแต่ยังถือถัง', c:'var(--warn)'},
+    {v:fmt(dN)+' ใบ', l:'ถังที่ไม่ได้หมุนเวียน'},
+    {v:fmt(dV)+' ฿', l:'มูลค่าถังที่จมอยู่', c:'var(--bad)'},
+  ]);
+  table($('t-dormant'), [{t:'ลูกค้า'},{t:'แบรนด์'},{t:'ขนาด',n:1},{t:'ถือถัง (ใบ)',n:1},{t:'สั่งล่าสุด'},{t:'เงียบมา (วัน)',n:1},{t:'มูลค่าถัง (฿)',n:1}],
+    dorm.slice(0,15).map(d=>[esc(d.c.name), tag(d.c.brand), d.c.size_kg+' กก.', d.n, d.last?thDate(d.last):'—', d.idle??'—', fmt(d.v)]));
+  $('h5').textContent = `${dorm.length} ลูกค้าหายไปเงียบ ๆ พร้อมถังของร้าน ${fmt(dN)} ใบ`;
+  $('sw5').innerHTML = `<b>ความหมาย (${esc(label)}):</b> รายชื่อนี้ <b>ไม่มีทางได้จากสมุดจด</b> เพราะต้องรู้ทั้งยอดถังค้างและวันที่สั่งล่าสุดของลูกค้าทุกคนพร้อมกัน
+    — นี่คือข้อมูลที่เกิดขึ้นได้ก็ต่อเมื่อร้านบันทึกทุกออเดอร์ลงระบบ`;
+
+  // --- ch6 receivables aging (FIFO)
+  const inv={}; tx.filter(t=>t.payment_method==='credit').forEach(t=>(inv[t.customer_id]=inv[t.customer_id]||[]).push(t));
+  const paid={}; D.payments.forEach(p=>{if(ON.has(CUST[p.customer_id].brand)) paid[p.customer_id]=(paid[p.customer_id]||0)+p.amount;});
+  const buckets=[['0–30 วัน',0],['31–60 วัน',0],['61–90 วัน',0],['90+ วัน',0]]; const debtors=[];
+  Object.entries(inv).forEach(([cid,list])=>{
+    list.sort((a,b)=>a.date<b.date?-1:1); let p=paid[cid]||0, owe=0, oldest=null;
+    list.forEach(t=>{let rem=t.gas_amount; const use=Math.min(p,rem); p-=use; rem-=use;
+      if(rem>0){const a=days(t.date); buckets[a<=30?0:a<=60?1:a<=90?2:3][1]+=rem; owe+=rem; if(oldest===null)oldest=a;}});
+    if(owe>0) debtors.push({c:CUST[cid], owe, oldest});
+  });
+  debtors.sort((a,b)=>b.owe-a.owe);
+  const ar = buckets.reduce((a,b)=>a+b[1],0), over60 = buckets[2][1]+buckets[3][1];
+  vbars($('c-aging'), buckets.map(b=>b[0]), buckets.map(b=>b[1]), {color:(i)=>['#2e7d4f','#c27c0e','#d9661e','#b3261e'][i]});
+  table($('t-debt'), [{t:'ลูกค้า'},{t:'แบรนด์'},{t:'ค้าง (฿)',n:1},{t:'บิลเก่าสุด (วัน)',n:1}],
+    debtors.slice(0,8).map(d=>[esc(d.c.name), tag(d.c.brand), fmt(d.owe), d.oldest]));
+  const n60 = debtors.filter(d=>d.oldest>60).length;
+  $('h6').textContent = `เงินค้างรับ ${fmt(ar)} บาท — ${fmt(over60)} บาทในนั้นค้างเกิน 60 วัน`;
+  $('sw6').innerHTML = `<b>ความหมาย (${esc(label)}):</b> มีลูกค้า ${n60} รายที่บิลเก่าสุดค้างเกิน 60 วัน
+    ระบบจัดอันดับให้อัตโนมัติว่าควรทวงใครก่อน แทนที่จะรอให้นึกขึ้นได้ตอนลูกค้าโทรมาสั่งครั้งต่อไป`;
+
+  // --- ch7 actions
+  const perBrand = brOn.map(b=>`${BRTH[b]} ${fmt(sizes.reduce((a,s)=>a+(held[b+'|'+s]||0),0))} ใบ`).join(' · ');
+  $('actions').innerHTML = `
+    <li><b>ขอถังเปล่าคืนจากลูกค้า ${extra.length} รายในรอบส่งถัดไป</b> — ${fmt(xN)} ใบ มูลค่า ${fmt(xV)} บาทที่ไม่มีมัดจำคุ้มครอง</li>
+    <li><b>โทรตามถังจากลูกค้า ${dorm.length} รายที่เงียบไป</b> — ได้ถังคืนสูงสุด ${fmt(dN)} ใบ มูลค่า ${fmt(dV)} บาท</li>
+    <li><b>ทวงเงินจากลูกค้า ${n60} รายที่ค้างเกิน 60 วัน</b> — รวม ${fmt(over60)} บาท ก่อนกลายเป็นหนี้สูญ</li>
+    <li><b>สรุปยอดถังหมุนเวียนแยกแบรนด์ ไว้คุยกับโรงบรรจุแต่ละเจ้า</b> — ${perBrand}</li>`;
+}
+render();
+
+/* ---------- team ---------- */
+$('team').querySelector('tbody').innerHTML = D.team.map((m,i)=>`<tr><td>${i+1}</td><td>${esc(m.name)}</td><td>${esc(m.student_id)}</td><td>${esc(m.role)}</td></tr>`).join('');
+</script>
+</body>
+</html>
