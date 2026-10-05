@@ -4,7 +4,7 @@
 
 | ชื่อ | รหัสนักศึกษา | หน้าที่ |
 |---|---|---|
-| Prame | 67160333 | ข้อมูล Dashboard และแผนธุรกิจ |
+| ดุลยุตม์ เลื่องสุนทร | 67160333 | ข้อมูล Dashboard และแผนธุรกิจ |
 
 Dashboard: [dashboard/index.html](dashboard/index.html)
 ดูออนไลน์: https://67160333.github.io/MINI-PROJECT/dashboard/
