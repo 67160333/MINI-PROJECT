@@ -97,13 +97,9 @@ python scripts/build_dashboard.py   # ฝังข้อมูลลง dashboar
 
 ---
 
-## อัปโหลดขึ้น GitHub
+## Repository
 
-```bash
-# สร้าง repository ว่างบน github.com ก่อน แล้ว:
-git remote add origin https://github.com/<ชื่อผู้ใช้>/<ชื่อ-repo>.git
-git push -u origin main
-```
+https://github.com/67160333/MINI-PROJECT
 
-เปิดให้คนอื่นดู Dashboard ผ่านลิงก์: **Settings → Pages → Branch: `main` / folder: `/ (root)`**
-แล้วเข้าที่ `https://<ชื่อผู้ใช้>.github.io/<ชื่อ-repo>/dashboard/`
+ดู Dashboard ออนไลน์ (หลังเปิด GitHub Pages: Settings → Pages → Branch `main` / `/ (root)`):
+https://67160333.github.io/MINI-PROJECT/dashboard/
